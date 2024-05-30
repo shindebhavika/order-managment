@@ -1,55 +1,102 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Flex,
-  Heading,
-  Input,
-  Button,
-  FormControl,
-  FormLabel,
-  Switch,
-  useColorMode,
-  useTheme,
-  UnorderedList,
-  ListItem,
+  Modal, ModalOverlay, ModalContent,
+  ModalHeader, ModalFooter, ModalBody,
+  ModalCloseButton, Button, Flex,
+  FormLabel, useColorMode,
+  useTheme, Text, Checkbox,
 } from "@chakra-ui/react";
 import Select from "react-select";
-import Products from "../utils/Products.json"
-function SaleOrderForm() {
+import Products from "../utils/Products.json";
+import FormField from "../Components/FormField";
+import ProductList from "../Components/ProductList";
+import { generateOrderId, getCurrentDate, getOrders, setOrder } from "../utils/helper";
+import { isViewingOrderAtom } from "../recoil-atoms";
+import { useRecoilValue } from "recoil";
+
+function SaleOrderForm({ isOpen, onClose, orderToModify, handleOrderUpdate = () => {} }) {
   const theme = useTheme();
   const { colorMode } = useColorMode();
-  const [products, setProducts] = useState([ Products]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+
+  const isOrederViwing = useRecoilValue(isViewingOrderAtom);
+
+  // Data fields
+  const [customerName, setCustomerName] = useState('');
+  const [customerId, setCustomerId] = useState('');
+  const [invoiceDate, setInvoiceDate] = useState('');
+  const [invoiceNo, setInvoiceNo] = useState('');
+  const [isPaid, setIsPaid] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [items, setItems] = useState({});
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  // Error messages
+  const [errors, setErrors] = useState({});
+
+  // To set on change data in respective fields
+  function handleOnChangeData(key, value) {
+    const setFuncByKey = {
+      customerName: setCustomerName,
+      customerId: setCustomerId,
+      invoiceDate: setInvoiceDate,
+      invoiceNo: setInvoiceNo,
+      isPaid: setIsPaid,
+    };
+    setFuncByKey[key](value);
+  }
+
+  function handleDiscardOrder() {
+    setCustomerName('');
+    setCustomerId('');
+    setInvoiceDate('');
+    setInvoiceNo('');
+    setIsPaid(false);
+    setProducts([]);
+    setItems({});
+    setTotalPrice(0);
+    setErrors({});
+  }
+
+  function prefillData(data) {
+    const {
+      customerId,
+      customerName,
+      invoiceDate,
+      invoiceNo,
+      products,
+      isPaid,
+      totalPrice,
+    } = data || {};
+
+    setCustomerId(customerId);
+    setCustomerName(customerName);
+    setInvoiceDate(invoiceDate);
+    setInvoiceNo(invoiceNo);
+    setIsPaid(isPaid);
+    setTotalPrice(totalPrice);
+    setProducts(products);
+  }
 
   useEffect(() => {
-    // Fetch product data from the JSON file
-    fetch("Products")
-      .then((response) => response.json())
-      .then((data) => {
-        // Transform the data to the format needed by react-select
-        const formattedProducts = data.map((product) => ({
-          value: product.id.toString(),
-          label: product.name,
-          owners: product.sku.map((sku) => ({
-            id: sku.id,
-            name: `Owner ${sku.id}`,
-            email: `owner${sku.id}@example.com`,
-          })),
-        }));
-        setProducts(formattedProducts);
-      })
-      .catch((error) => console.error("Error fetching products:", error));
-  }, []);
+    // If we have an order to modify, prefill all the data
+    if (!orderToModify) return;
+    prefillData(orderToModify);
+  }, [orderToModify]);
 
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      backgroundColor: colorMode === "dark" ? theme.colors.gray[700] : theme.colors.white,
-      borderColor: colorMode === "dark" ? theme.colors.gray[600] : theme.colors.gray[300],
+      backgroundColor:
+        colorMode === "dark" ? theme.colors.gray[700] : theme.colors.white,
+      borderColor:
+        colorMode === "dark" ? theme.colors.gray[600] : theme.colors.gray[300],
       color: colorMode === "dark" ? theme.colors.white : theme.colors.black,
+      padding: "6px",
     }),
     menu: (provided) => ({
       ...provided,
-      backgroundColor: colorMode === "dark" ? theme.colors.gray[700] : theme.colors.white,
+      backgroundColor:
+        colorMode === "dark" ? theme.colors.gray[700] : theme.colors.white,
     }),
     option: (provided, state) => ({
       ...provided,
@@ -64,6 +111,7 @@ function SaleOrderForm() {
       "&:active": {
         backgroundColor: theme.colors.teal[500],
         color: theme.colors.white,
+        borderRadius: "9999px",
       },
     }),
     singleValue: (provided) => ({
@@ -74,6 +122,10 @@ function SaleOrderForm() {
       ...provided,
       backgroundColor: theme.colors.teal[100],
       color: theme.colors.teal[700],
+      borderRadius: "9999px",
+      padding: "6px",
+      fontWeight: "bold",
+      fontSize: "1.2em",
     }),
     multiValueLabel: (provided) => ({
       ...provided,
@@ -89,88 +141,224 @@ function SaleOrderForm() {
     }),
   };
 
-  const handleSelectChange = (selectedOptions) => {
-    setSelectedProducts(selectedOptions);
+  const handleSelectChange = (selectedProducts) => {
+    setProducts(selectedProducts);
   };
 
+  function validateInputs() {
+    const newErrors = {};
+    if (!customerName) newErrors.customerName = "Customer name is required";
+    if (!customerId) newErrors.customerId = "Customer ID is required";
+    if (!invoiceDate) newErrors.invoiceDate = "Invoice date is required";
+    if (!invoiceNo) newErrors.invoiceNo = "Invoice number is required";
+    if (products.length === 0) newErrors.products = "At least one product must be selected";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
+  function createOrder() {
+    if (!validateInputs()) {
+      return;
+    }
+
+    const newOrder = {
+      customerId,
+      customerName,
+      invoiceDate,
+      invoiceNo,
+      products,
+      isPaid,
+      totalPrice,
+      lastModified: getCurrentDate(),
+    };
+
+    // Fetching prev data
+    const orders = getOrders();
+    // Pushing new order
+    if (!orderToModify) {
+      // It's a new order
+      orders.push({
+        ...newOrder,
+        orderId: generateOrderId(),
+      });
+    } else {
+      const orderId = orderToModify.orderId;
+      const orderIndex = orders.findIndex((order) => order.orderId === orderId);
+      orders[orderIndex] = {
+        ...orderToModify,
+        ...newOrder,
+      };
+    }
+
+    // Updating orders
+    setOrder(orders);
+    // Inform about the update in order
+    handleOrderUpdate();
+    // Closing modal
+    onClose();
+    // Resetting all data fields
+    handleDiscardOrder();
+  }
+
+  function handleSkuDetails({ price, quantity, productId, id }) {
+    const storedProducts = [...products];
+    const productIndex = products.findIndex((product) => product.value === productId);
+    const { sku = [] } = storedProducts[productIndex];
+    const skuIndex = sku.findIndex((sku) => sku.id === id);
+    const updatedSku = {
+      ...(sku[skuIndex] || {}),
+      price,
+      quantity,
+    };
+    sku.splice(skuIndex, 1, updatedSku);
+    storedProducts[productIndex].sku = sku;
+    setItems({
+      ...items,
+      [id]: price * quantity,
+    });
+  }
+
+  useEffect(() => {
+    // To get updated total price of order
+    let totalPrice = 0;
+    Object.values(items).forEach((price) => (totalPrice += price));
+    setTotalPrice(totalPrice);
+  }, [items]);
+
+  function handleClickCloseBtn() {
+    handleDiscardOrder();
+    onClose();
+  }
+
   return (
-    <Flex
-      h="100vh"
-      alignItems="center"
-      justifyContent="center"
-      padding="3%"
-      flexDirection="column"
-    >
-      <Flex
-        h="100%"
-        flexDirection="column"
-        w="100%"
-        p="12"
-        borderRadius={8}
-        boxShadow="lg"
-      >
-        <Heading mb={6}>SALE ORDER FORM</Heading>
-        <FormLabel htmlFor="invoiceNumber">Invoice Number*</FormLabel>
-        <Input
-          id="invoiceNumber"
-          placeholder="Enter Invoice Number"
-          variant="filled"
-          mb={3}
-        />
-        <FormLabel htmlFor="invoiceDate">Invoice Date*</FormLabel>
-        <Input
-          id="invoiceDate"
-          placeholder="Select Date"
-          type="date"
-          variant="filled"
-          mb={6}
-        />
+    <Modal isOpen={isOpen} onClose={onClose} size="4xl" p="1rem">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Sale Order Form</ModalHeader>
+        <ModalCloseButton onClick={handleClickCloseBtn} />
+        <ModalBody>
+          <FormField
+            id="invoiceNumber"
+            label="Invoice Number"
+            placeholder="Enter Invoice Number"
+            mb={3}
+            onChange={(e) => handleOnChangeData('invoiceNo', e.target.value)}
+            value={invoiceNo}
+            readOnly={isOrederViwing}
+            required
+          />
+          {errors.invoiceNo && <Text color="red.500">{errors.invoiceNo}</Text>}
 
-        <FormLabel htmlFor="customer">Customer*</FormLabel>
-        <Input
-          id="customer"
-          placeholder="Enter Customer Name"
-          variant="filled"
-          mb={6}
-        />
+          <FormField
+            id="invoiceDate"
+            label="Invoice Date"
+            type="date"
+            placeholder="Select Date"
+            onChange={(e) => handleOnChangeData('invoiceDate', e.target.value)}
+            value={invoiceDate}
+            readOnly={isOrederViwing}
+            required
+          />
+          {errors.invoiceDate && <Text color="red.500">{errors.invoiceDate}</Text>}
 
-        <FormLabel htmlFor="products">All Products*</FormLabel>
-        <Select
-          id="products"
-          options={products}
-          isMulti
-          placeholder="Select Products"
-          styles={customStyles}
-          mb={6}
-          onChange={handleSelectChange}
-        />
+          <FormField
+            id="customer"
+            label="Customer"
+            placeholder="Enter Customer Name"
+            mb={6}
+            onChange={(e) => handleOnChangeData('customerName', e.target.value)}
+            value={customerName}
+            readOnly={isOrederViwing}
+            required
+          />
+          {errors.customerName && <Text color="red.500">{errors.customerName}</Text>}
 
-        <UnorderedList>
-          {selectedProducts.map((product) => (
-            <ListItem key={product.value} mb={2}>
-              <Select
-                value={product}
-                options={product.owners.map((owner) => ({
-                  value: product.value,
-                  label: `${owner.name} - ${owner.email}`,
-                }))}
-                styles={customStyles}
-              />
-            </ListItem>
-          ))}
-        </UnorderedList>
+          <FormField
+            id="customerId"
+            label="Customer Id"
+            placeholder="Enter Customer Id"
+            mb={3}
+            onChange={(e) => handleOnChangeData('customerId', e.target.value)}
+            value={customerId}
+            readOnly={isOrederViwing}
+            required
+          />
+          {errors.customerId && <Text color="red.500">{errors.customerId}</Text>}
 
-        <Button colorScheme="teal" mb={8}>
-          Submit Order
-        </Button>
-        <FormControl display="flex" alignItems="center">
-          <FormLabel htmlFor="dark_mode" mb="0">
-            Enable Dark Mode?
+          <FormLabel htmlFor="products" className="input-label-required">
+            All Product
           </FormLabel>
-          <Switch id="dark_mode" colorScheme="teal" size="lg" />
-        </FormControl>
-      </Flex>
-    </Flex>
+          <Select
+            id="products"
+            options={Products.map((product) => ({
+              value: product.id,
+              label: product.name,
+              sku: product.sku,
+            }))}
+            isMulti
+            placeholder="Select Products"
+            styles={customStyles}
+            mb={6}
+            onChange={handleSelectChange}
+            closeMenuOnSelect={false}
+            value={products}
+            isDisabled={isOrederViwing}
+            required
+          />
+          {errors.products && <Text color="red.500">{errors.products}</Text>}
+
+          {products.map((product) => (
+            <ProductList key={product.id} data={product} handleSkuDetails={handleSkuDetails} />
+          ))}
+
+          <Flex justifyContent="space-between">
+            <Checkbox
+              className="custom-checkbox"
+              colorScheme="green"
+              size="lg"
+              onChange={() => setIsPaid(!isPaid)}
+              isChecked={isPaid}
+            >
+              Is Paid
+            </Checkbox>
+
+            <Flex className="total-summary">
+              <Text className="total-summary-text">Total Price: {totalPrice}</Text>
+              <Text className="total-summary-text">Total Items: {Object.keys(items).length}</Text>
+            </Flex>
+          </Flex>
+        </ModalBody>
+
+        <ModalFooter justifyContent="space-between">
+          <Button
+            size="md"
+            height="48px"
+            width="200px"
+            border="2px"
+            color="red"
+            bg="#FFF5F5"
+            _hover={{ bg: "#E53E3E", color: "white" }}
+            onClick={handleDiscardOrder}
+            isDisabled={isOrederViwing}
+          >
+            Discard
+          </Button>
+          <Button
+            size="md"
+            height="48px"
+            width="200px"
+            border="2px"
+            borderColor="green"
+            _hover={{ bg: "#38A169", color: "white" }}
+            onClick={createOrder}
+            isDisabled={isOrederViwing}
+          >
+            {orderToModify ? 'Update Sale Order' : 'Create Sale Order'}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
 

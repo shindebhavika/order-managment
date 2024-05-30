@@ -1,0 +1,58 @@
+.center-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3%;
+  width: 70%;
+  flex-direction: column;
+}
+
+.form-container {
+  height: 100%;
+  flex-direction: column;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: var(--chakra-shadows-lg);
+}
+
+.header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 9999px;
+  width: 20rem;
+  background: rgba(22, 243, 140, 0.411);
+  padding: 0.6rem;
+  font-weight: 500;
+  margin-bottom: 40px;
+}
+
+.input-label-required::after {
+  content: " *";
+  color: red;
+}
+
+.custom-checkbox {
+  font-weight: bold;
+  margin-right: 4px;
+  border-color: black;
+}
+
+.total-summary {
+  display: flex;
+  justify-content: space-around;
+  width: 50%;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.total-summary-text {
+  width: 10rem;
+  background: rgba(22, 243, 140, 0.411);
+  padding: 0.4rem;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 7px;
+}

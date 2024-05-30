@@ -4,6 +4,9 @@ import LoginPage from './Pages/LoginPage';
 // import OrderDetails from './Pages/OrderDetails';
 import SaleOrderForm from './Pages/SaleOrderForm';
 import OrderDetails from './Pages/OrderDetails';
+import {
+  RecoilRoot,
+} from 'recoil';
 
 const App = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -22,11 +25,13 @@ const App = () => {
   }, [navigate]);
 
   return (
+    <RecoilRoot>
     <Routes>
       <Route path="/" element={<OrderDetails />} />
       <Route path="/login" element={<LoginPage setIsLogin={setIsLogin} />} />
       <Route path="/" element={isLogin ? <Navigate to="/" /> : <Navigate to="/login" />} />
     </Routes>
+    </RecoilRoot>
   );
 };
 

@@ -1,0 +1,53 @@
+[
+  {
+    "id": 9,
+    "customer": 11908,
+    "customer_profile": {
+      "id": 11908,
+      "name": "Ram",
+      "color": [182, 73, 99],
+      "email": "jesus_christ@church.com",
+      "pincode": "Mumbai",
+      "location_name": "Mumbai, Maharashtra, India",
+      "type": "C",
+      "profile_pic": null,
+      "gst": ""
+    },
+    "totalPrice": 123.45,
+    "lastModified": "2024-05-20"
+  },
+  {
+    "id": 10,
+    "customer": 11909,
+    "customer_profile": {
+      "id": 11909,
+      "name": "Sita",
+      "color": [90, 200, 250],
+      "email": "sita_queen@kingdom.com",
+      "pincode": "Delhi",
+      "location_name": "Delhi, India",
+      "type": "B",
+      "profile_pic": null,
+      "gst": "29ABCDE1234F2Z5"
+    },
+    "totalPrice": 678.90,
+    "lastModified": "2024-05-21"
+  },
+  {
+    "id": 11,
+    "customer": 11910,
+    "customer_profile": {
+      "id": 11910,
+      "name": "Lakshman",
+      "color": [255, 165, 0],
+      "email": "lakshman_brother@forest.com",
+      "pincode": "Chennai",
+      "location_name": "Chennai, Tamil Nadu, India",
+      "type": "A",
+      "profile_pic": null,
+      "gst": "33ABCDE1234F2Z6"
+    },
+    "totalPrice": 234.56,
+    "lastModified": "2024-05-22"
+  }
+]
