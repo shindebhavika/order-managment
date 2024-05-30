@@ -1,0 +1,209 @@
+
+
+[
+  {
+    "id": 209,
+    "display_id": 8,
+    "owner": 1079,
+    "name": "Product1",
+    "category": "The god of War",
+    "characteristics": "New Product Characteristics",
+    "features": "",
+    "brand": "New Product Brand",
+    "sku": [
+    {
+    "id": 248,
+    "selling_price": 54,
+    "max_retail_price": 44,
+    "amount": 33,
+"unit": "kg",
+"quantity_in_inventory": 0,
+"product": 209
+},
+{
+"id": 247,
+"selling_price": 32,
+"max_retail_price": 32,
+"amount": 33,
+"unit": "kg",
+"quantity_in_inventory": 0,
+"product": 209
+},
+{
+"id": 246,
+"selling_price": 23,
+"max_retail_price": 21,
+"amount": 22,
+"unit": "kg",
+"quantity_in_inventory": 1,
+"product": 209
+}
+],
+"updated_on": "2024-05-24T12:46:41.995873Z",
+"adding_date": "2024-05-24T12:46:41.995828Z"
+},
+ {
+    "id": 210,
+    "display_id": 9,
+    "owner": 1080,
+    "name": "Product2",
+    "category": "The Legend of Zelda",
+    "characteristics": "High Quality Product",
+    "features": "Feature-rich",
+    "brand": "Premium Brand",
+    "sku": [
+      {
+        "id": 249,
+        "selling_price": 60,
+        "max_retail_price": 55,
+        "amount": 30,
+        "unit": "kg",
+        "quantity_in_inventory": 10,
+        "product": 210
+      },
+      {
+        "id": 250,
+        "selling_price": 45,
+        "max_retail_price": 40,
+        "amount": 25,
+        "unit": "kg",
+        "quantity_in_inventory": 5,
+        "product": 210
+      },
+      {
+        "id": 251,
+        "selling_price": 50,
+        "max_retail_price": 48,
+        "amount": 20,
+        "unit": "kg",
+        "quantity_in_inventory": 15,
+        "product": 210
+      }
+    ],
+    "updated_on": "2024-05-25T12:46:41.995873Z",
+    "adding_date": "2024-05-25T12:46:41.995828Z"
+  },
+  {
+    "id": 211,
+    "display_id": 10,
+    "owner": 1081,
+    "name": "Product3",
+    "category": "Super Mario",
+    "characteristics": "Reliable Product",
+    "features": "Durable",
+    "brand": "Famous Brand",
+    "sku": [
+      {
+        "id": 252,
+        "selling_price": 70,
+        "max_retail_price": 65,
+        "amount": 35,
+        "unit": "kg",
+        "quantity_in_inventory": 20,
+        "product": 211
+      },
+      {
+        "id": 253,
+        "selling_price": 65,
+        "max_retail_price": 60,
+        "amount": 28,
+        "unit": "kg",
+        "quantity_in_inventory": 25,
+        "product": 211
+      },
+      {
+        "id": 254,
+        "selling_price": 80,
+        "max_retail_price": 75,
+        "amount": 40,
+        "unit": "kg",
+        "quantity_in_inventory": 30,
+        "product": 211
+      }
+    ],
+    "updated_on": "2024-05-26T12:46:41.995873Z",
+    "adding_date": "2024-05-26T12:46:41.995828Z"
+  },
+  {
+    "id": 212,
+    "display_id": 11,
+    "owner": 1082,
+    "name": "Product4",
+    "category": "Call of Duty",
+    "characteristics": "Advanced Product",
+    "features": "High-tech",
+    "brand": "Top Brand",
+    "sku": [
+      {
+        "id": 255,
+        "selling_price": 90,
+        "max_retail_price": 85,
+        "amount": 50,
+        "unit": "kg",
+        "quantity_in_inventory": 40,
+        "product": 212
+      },
+      {
+        "id": 256,
+        "selling_price": 85,
+        "max_retail_price": 80,
+        "amount": 45,
+        "unit": "kg",
+        "quantity_in_inventory": 35,
+        "product": 212
+      },
+      {
+        "id": 257,
+        "selling_price": 95,
+        "max_retail_price": 90,
+        "amount": 55,
+        "unit": "kg",
+        "quantity_in_inventory": 50,
+        "product": 212
+      }
+    ],
+    "updated_on": "2024-05-27T12:46:41.995873Z",
+    "adding_date": "2024-05-27T12:46:41.995828Z"
+  },
+  {
+    "id": 213,
+    "display_id": 12,
+    "owner": 1083,
+    "name": "Product5",
+    "category": "Minecraft",
+    "characteristics": "Eco-friendly Product",
+    "features": "Sustainable",
+    "brand": "Green Brand",
+    "sku": [
+      {
+        "id": 258,
+        "selling_price": 100,
+        "max_retail_price": 95,
+        "amount": 60,
+        "unit": "kg",
+        "quantity_in_inventory": 60,
+        "product": 213
+      },
+      {
+        "id": 259,
+        "selling_price": 95,
+        "max_retail_price": 90,
+        "amount": 55,
+        "unit": "kg",
+        "quantity_in_inventory": 55,
+        "product": 213
+      },
+      {
+        "id": 260,
+        "selling_price": 105,
+        "max_retail_price": 100,
+        "amount": 65,
+        "unit": "kg",
+        "quantity_in_inventory": 70,
+        "product": 213
+      }
+    ],
+    "updated_on": "2024-05-28T12:46:41.995873Z",
+    "adding_date": "2024-05-28T12:46:41.995828Z"
+  }
+]
